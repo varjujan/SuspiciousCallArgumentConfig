@@ -36,6 +36,8 @@ private slots:
 
     void on_runScriptButton_clicked();
 
+    void on_saveButton_clicked();
+
 private:
     Ui::Widget *ui;
 };

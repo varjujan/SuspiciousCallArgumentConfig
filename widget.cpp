@@ -4,6 +4,7 @@
 #include <QDateTime>
 #include <QDir>
 #include <QClipboard>
+#include <QSettings>
 
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
@@ -12,6 +13,31 @@ Widget::Widget(QWidget *parent) :
     ui->setupUi(this);
 
     this->setFixedSize(this->width(),this->height());
+
+    if (QFile("Settings").exists()){
+        QSettings settings("Settings", QSettings::IniFormat);
+
+        settings.beginGroup("Bools");
+        ui->ignoreLitCheckbox->setChecked(settings.value("IgnoreLiteral").toBool());
+        ui->equalityCheckbox->setChecked(settings.value("Equality").toBool());
+        ui->levenshteinCheckbox->setChecked(settings.value("Levenshtein").toBool());
+        ui->prefixCheckbox->setChecked(settings.value("Prefix").toBool());
+        ui->suffixCheckbox->setChecked(settings.value("Suffix").toBool());
+        ui->substringCheckbox->setChecked(settings.value("Substring").toBool());
+        ui->metaphoneCheckbox->setChecked(settings.value("Metaphone").toBool());
+        ui->jaroCheckbox->setChecked(settings.value("Jaro").toBool());
+        ui->diceCheckbox->setChecked(settings.value("Dice").toBool());
+        settings.endGroup();
+
+        settings.beginGroup("Ints");
+        ui->levenshteinSpinbox->setValue(settings.value("LevenshteinValue").toInt());
+        ui->prefixSpinbox->setValue(settings.value("PrefixValue").toInt());
+        ui->suffixSpinbox->setValue(settings.value("SuffixValue").toInt());
+        ui->substringSpinbox->setValue(settings.value("SubstringValue").toInt());
+        ui->jaroSpinbox->setValue(settings.value("JaroValue").toInt());
+        ui->diceSpinbox->setValue(settings.value("DiceValue").toInt());
+        settings.endGroup();
+    }
 
 
 }
@@ -77,16 +103,16 @@ void Widget::on_runButton_clicked()
 
     process = new QProcess();
     process->start("gedit", QStringList() << filename);
-    process->waitForFinished();
-    process->close();
+    process->waitForStarted();
+    //process->close();
 }
 
 QString Widget::getOptions()
 {
     QString result = "";
 
-    if(ui->distHeurCheckbox->isChecked())
-        result += "_DH";
+    if(ui->ignoreLitCheckbox->isChecked())
+        result += "_IG";
 
     if(ui->equalityCheckbox->isChecked())
         result += "_EQ";
@@ -119,7 +145,7 @@ QString Widget::getConfig()
 {
     QString result = " -config=\"{CheckOptions: [";
 
-    result += "{key: misc-suspicious-call-argument.DistHeur, value: " + QString::number(ui->distHeurCheckbox->isChecked()) + "}, ";
+    result += "{key: misc-suspicious-call-argument.IgnoreLiteralCases, value: " + QString::number(ui->ignoreLitCheckbox->isChecked()) + "}, ";
     result += "{key: misc-suspicious-call-argument.Equality, value: " + QString::number(ui->equalityCheckbox->isChecked()) + "}, ";
     result += "{key: misc-suspicious-call-argument.Levenshtein, value: " + QString::number(ui->levenshteinCheckbox->isChecked()) + "}, ";
     result += "{key: misc-suspicious-call-argument.Prefix, value: " + QString::number(ui->prefixCheckbox->isChecked()) + "}, ";
@@ -171,4 +197,30 @@ void Widget::on_runScriptButton_clicked()
     process->waitForFinished();
     process->close();
     this->setCursor(Qt::ArrowCursor);*/
+}
+
+void Widget::on_saveButton_clicked()
+{
+    QSettings settings("Settings", QSettings::IniFormat);
+
+    settings.beginGroup("Bools");
+    settings.setValue("IgnoreLiteral", ui->ignoreLitCheckbox->isChecked());
+    settings.setValue("Equality", ui->equalityCheckbox->isChecked());
+    settings.setValue("Levenshtein", ui->levenshteinCheckbox->isChecked());
+    settings.setValue("Prefix", ui->prefixCheckbox->isChecked());
+    settings.setValue("Suffix", ui->suffixCheckbox->isChecked());
+    settings.setValue("Substring", ui->substringCheckbox->isChecked());
+    settings.setValue("Metaphone", ui->metaphoneCheckbox->isChecked());
+    settings.setValue("Jaro", ui->jaroCheckbox->isChecked());
+    settings.setValue("Dice", ui->diceCheckbox->isChecked());
+    settings.endGroup();
+
+    settings.beginGroup("Ints");
+    settings.setValue("LevenshteinValue", ui->levenshteinSpinbox->value());
+    settings.setValue("PrefixValue", ui->prefixSpinbox->value());
+    settings.setValue("SuffixValue", ui->suffixSpinbox->value());
+    settings.setValue("SubstringValue", ui->substringSpinbox->value());
+    settings.setValue("JaroValue", ui->jaroSpinbox->value());
+    settings.setValue("DiceValue", ui->diceSpinbox->value());
+    settings.endGroup();
 }
