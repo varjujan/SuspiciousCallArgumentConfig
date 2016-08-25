@@ -38,6 +38,8 @@ private slots:
 
     void on_saveButton_clicked();
 
+    void on_browseScriptLocationBUtton_clicked();
+
 private:
     Ui::Widget *ui;
 };

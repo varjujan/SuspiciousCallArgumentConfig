@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QClipboard>
 #include <QSettings>
+#include <QFileDialog>
 
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
@@ -30,12 +31,19 @@ Widget::Widget(QWidget *parent) :
         settings.endGroup();
 
         settings.beginGroup("Ints");
-        ui->levenshteinSpinbox->setValue(settings.value("LevenshteinValue").toInt());
-        ui->prefixSpinbox->setValue(settings.value("PrefixValue").toInt());
-        ui->suffixSpinbox->setValue(settings.value("SuffixValue").toInt());
-        ui->substringSpinbox->setValue(settings.value("SubstringValue").toInt());
-        ui->jaroSpinbox->setValue(settings.value("JaroValue").toInt());
-        ui->diceSpinbox->setValue(settings.value("DiceValue").toInt());
+        ui->levenshteinSpinbox->setValue(settings.value("LevenshteinUpperBound").toInt());
+        ui->prefixSpinbox->setValue(settings.value("PrefixUpperBound").toInt());
+        ui->suffixSpinbox->setValue(settings.value("SuffixUpperBound").toInt());
+        ui->substringSpinbox->setValue(settings.value("SubstringUpperBound").toInt());
+        ui->jaroSpinbox->setValue(settings.value("JaroUpperBound").toInt());
+        ui->diceSpinbox->setValue(settings.value("DiceUpperBound").toInt());
+
+        ui->levenshteinLowerSpinbox->setValue(settings.value("LevenshteinLowerBound").toInt());
+        ui->prefixLowerSpinbox->setValue(settings.value("PrefixLowerBound").toInt());
+        ui->suffixLowerSpinbox->setValue(settings.value("SuffixLowerBound").toInt());
+        ui->substringLowerSpinbox->setValue(settings.value("SubstringLowerBound").toInt());
+        ui->jaroLowerSpinbox->setValue(settings.value("JaroLowerBound").toInt());
+        ui->diceLowerSpinbox->setValue(settings.value("DiceLowerBound").toInt());
         settings.endGroup();
     }
 
@@ -51,31 +59,37 @@ Widget::~Widget()
 void Widget::on_levenshteinCheckbox_stateChanged(int arg1)
 {
     ui->levenshteinSpinbox->setEnabled(arg1);
+    ui->levenshteinLowerSpinbox->setEnabled(arg1);
 }
 
 void Widget::on_prefixCheckbox_stateChanged(int arg1)
 {
     ui->prefixSpinbox->setEnabled(arg1);
+    ui->prefixLowerSpinbox->setEnabled(arg1);
 }
 
 void Widget::on_suffixCheckbox_stateChanged(int arg1)
 {
     ui->suffixSpinbox->setEnabled(arg1);
+    ui->suffixLowerSpinbox->setEnabled(arg1);
 }
 
 void Widget::on_substringCheckbox_stateChanged(int arg1)
 {
     ui->substringSpinbox->setEnabled(arg1);
+    ui->substringLowerSpinbox->setEnabled(arg1);
 }
 
 void Widget::on_jaroCheckbox_stateChanged(int arg1)
 {
     ui->jaroSpinbox->setEnabled(arg1);
+    ui->jaroLowerSpinbox->setEnabled(arg1);
 }
 
 void Widget::on_diceCheckbox_stateChanged(int arg1)
 {
     ui->diceSpinbox->setEnabled(arg1);
+    ui->diceLowerSpinbox->setEnabled(arg1);
 }
 
 void Widget::on_runButton_clicked()
@@ -118,25 +132,31 @@ QString Widget::getOptions()
         result += "_EQ";
 
     if(ui->levenshteinCheckbox->isChecked())
-        result += "_LE" + QString::number(ui->levenshteinSpinbox->value());
+        result += "_LE" + QString::number(ui->levenshteinSpinbox->value())
+                + "_" + QString::number(ui->levenshteinLowerSpinbox->value());
 
     if(ui->prefixCheckbox->isChecked())
-        result += "_PR" + QString::number(ui->prefixSpinbox->value());
+        result += "_PR" + QString::number(ui->prefixSpinbox->value())
+                + "_" + QString::number(ui->prefixLowerSpinbox->value());
 
     if(ui->suffixCheckbox->isChecked())
-        result += "_SU" + QString::number(ui->suffixSpinbox->value());
+        result += "_SU" + QString::number(ui->suffixSpinbox->value())
+                + "_" + QString::number(ui->suffixLowerSpinbox->value());
 
     if(ui->substringCheckbox->isChecked())
-        result += "_SS" + QString::number(ui->substringSpinbox->value());
+        result += "_SS" + QString::number(ui->substringSpinbox->value())
+                + "_" + QString::number(ui->substringLowerSpinbox->value());
 
     if(ui->metaphoneCheckbox->isChecked())
         result += "_ME";
 
     if(ui->jaroCheckbox->isChecked())
-        result += "_JA" + QString::number(ui->jaroSpinbox->value());
+        result += "_JA" + QString::number(ui->jaroSpinbox->value())
+                + "_" + QString::number(ui->jaroLowerSpinbox->value());
 
     if(ui->diceCheckbox->isChecked())
-        result += "_DI" + QString::number(ui->diceSpinbox->value());
+        result += "_DI" + QString::number(ui->diceSpinbox->value())
+                + "_" + QString::number(ui->diceLowerSpinbox->value());
 
     return result;
 }
@@ -154,12 +174,19 @@ QString Widget::getConfig()
     result += "{key: misc-suspicious-call-argument.Metaphone, value: " + QString::number(ui->metaphoneCheckbox->isChecked()) + "}, ";
     result += "{key: misc-suspicious-call-argument.JaroWinkler, value: " + QString::number(ui->jaroCheckbox->isChecked()) + "}, ";
     result += "{key: misc-suspicious-call-argument.Dice, value: " + QString::number(ui->diceCheckbox->isChecked()) + "}, ";
-    result += "{key: misc-suspicious-call-argument.LevenshteinLimit, value: " + QString::number(ui->levenshteinSpinbox->value()) + "}, ";
-    result += "{key: misc-suspicious-call-argument.PrefixLimit, value: " + QString::number(ui->prefixSpinbox->value()) + "}, ";
-    result += "{key: misc-suspicious-call-argument.SuffixLimit, value: " + QString::number(ui->suffixSpinbox->value()) + "}, ";
-    result += "{key: misc-suspicious-call-argument.SubstringLimit, value: " + QString::number(ui->substringSpinbox->value()) + "}, ";
-    result += "{key: misc-suspicious-call-argument.JaroWinklerLimit, value: " + QString::number(ui->jaroSpinbox->value()) + "}, ";
-    result += "{key: misc-suspicious-call-argument.DiceLimit, value: " + QString::number(ui->diceSpinbox->value()) + "}";
+    result += "{key: misc-suspicious-call-argument.LevenshteinUpperBound, value: " + QString::number(ui->levenshteinSpinbox->value()) + "}, ";
+    result += "{key: misc-suspicious-call-argument.PrefixUpperBound, value: " + QString::number(ui->prefixSpinbox->value()) + "}, ";
+    result += "{key: misc-suspicious-call-argument.SuffixUpperBound, value: " + QString::number(ui->suffixSpinbox->value()) + "}, ";
+    result += "{key: misc-suspicious-call-argument.SubstringUpperBound, value: " + QString::number(ui->substringSpinbox->value()) + "}, ";
+    result += "{key: misc-suspicious-call-argument.JaroWinklerUpperBound, value: " + QString::number(ui->jaroSpinbox->value()) + "}, ";
+    result += "{key: misc-suspicious-call-argument.DiceUpperBound, value: " + QString::number(ui->diceSpinbox->value()) + "}, ";
+
+    result += "{key: misc-suspicious-call-argument.LevenshteinLowerBound, value: " + QString::number(ui->levenshteinLowerSpinbox->value()) + "}, ";
+    result += "{key: misc-suspicious-call-argument.PrefixLowerBound, value: " + QString::number(ui->prefixLowerSpinbox->value()) + "}, ";
+    result += "{key: misc-suspicious-call-argument.SuffixLowerBound, value: " + QString::number(ui->suffixLowerSpinbox->value()) + "}, ";
+    result += "{key: misc-suspicious-call-argument.SubstringLowerBound, value: " + QString::number(ui->substringLowerSpinbox->value()) + "}, ";
+    result += "{key: misc-suspicious-call-argument.JaroWinklerLowerBound, value: " + QString::number(ui->jaroLowerSpinbox->value()) + "}, ";
+    result += "{key: misc-suspicious-call-argument.DiceLowerBound, value: " + QString::number(ui->diceLowerSpinbox->value()) + "}";
 
     result += "]}\"";
     return result;
@@ -216,11 +243,31 @@ void Widget::on_saveButton_clicked()
     settings.endGroup();
 
     settings.beginGroup("Ints");
-    settings.setValue("LevenshteinValue", ui->levenshteinSpinbox->value());
-    settings.setValue("PrefixValue", ui->prefixSpinbox->value());
-    settings.setValue("SuffixValue", ui->suffixSpinbox->value());
-    settings.setValue("SubstringValue", ui->substringSpinbox->value());
-    settings.setValue("JaroValue", ui->jaroSpinbox->value());
-    settings.setValue("DiceValue", ui->diceSpinbox->value());
+    settings.setValue("LevenshteinUpperBound", ui->levenshteinSpinbox->value());
+    settings.setValue("PrefixUpperBound", ui->prefixSpinbox->value());
+    settings.setValue("SuffixUpperBound", ui->suffixSpinbox->value());
+    settings.setValue("SubstringUpperBound", ui->substringSpinbox->value());
+    settings.setValue("JaroUpperBound", ui->jaroSpinbox->value());
+    settings.setValue("DiceUpperBound", ui->diceSpinbox->value());
+
+    settings.setValue("LevenshteinLowerBound", ui->levenshteinLowerSpinbox->value());
+    settings.setValue("PrefixLowerBound", ui->prefixLowerSpinbox->value());
+    settings.setValue("SuffixLowerBound", ui->suffixLowerSpinbox->value());
+    settings.setValue("SubstringLowerBound", ui->substringLowerSpinbox->value());
+    settings.setValue("JaroLowerBound", ui->jaroLowerSpinbox->value());
+    settings.setValue("DiceLowerBound", ui->diceLowerSpinbox->value());
     settings.endGroup();
+}
+
+void Widget::on_browseScriptLocationBUtton_clicked()
+{
+    QFileDialog dialog;
+    dialog.setFileMode(QFileDialog::Directory);
+    dialog.setOption(QFileDialog::ShowDirsOnly);
+
+    if(dialog.exec()){
+        QStringList fodlerName = dialog.selectedFiles();
+
+        ui->scriptLocationEdit->setText(fodlerName[0]);
+    }
 }
