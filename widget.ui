@@ -136,7 +136,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>60</y>
+      <y>30</y>
       <width>97</width>
       <height>22</height>
      </rect>
@@ -189,11 +189,11 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QCheckBox" name="ignoreLitCheckbox">
+   <widget class="QCheckBox" name="abbreviationCheckbox">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>30</y>
+      <y>60</y>
       <width>161</width>
       <height>22</height>
      </rect>
@@ -202,7 +202,7 @@
      <enum>Qt::LeftToRight</enum>
     </property>
     <property name="text">
-     <string>IgnoreLiteralCases</string>
+     <string>Abbreviation</string>
     </property>
     <property name="checked">
      <bool>true</bool>
@@ -582,7 +582,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>~/Asztal/phabricator_v1/misc-suspicious-call-argument.cpp</string>
+     <string>~/Asztal/teszt.cpp</string>
     </property>
    </widget>
    <widget class="QLabel" name="label">

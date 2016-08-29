@@ -19,8 +19,8 @@ Widget::Widget(QWidget *parent) :
         QSettings settings("Settings", QSettings::IniFormat);
 
         settings.beginGroup("Bools");
-        ui->ignoreLitCheckbox->setChecked(settings.value("IgnoreLiteral").toBool());
         ui->equalityCheckbox->setChecked(settings.value("Equality").toBool());
+        ui->abbreviationCheckbox->setChecked(settings.value("Abbreviation").toBool());
         ui->levenshteinCheckbox->setChecked(settings.value("Levenshtein").toBool());
         ui->prefixCheckbox->setChecked(settings.value("Prefix").toBool());
         ui->suffixCheckbox->setChecked(settings.value("Suffix").toBool());
@@ -123,13 +123,13 @@ void Widget::on_runButton_clicked()
 
 QString Widget::getOptions()
 {
-    QString result = "";
-
-    if(ui->ignoreLitCheckbox->isChecked())
-        result += "_IG";
+    QString result = "";    
 
     if(ui->equalityCheckbox->isChecked())
         result += "_EQ";
+
+    if(ui->abbreviationCheckbox->isChecked())
+        result += "_AB";
 
     if(ui->levenshteinCheckbox->isChecked())
         result += "_LE" + QString::number(ui->levenshteinSpinbox->value())
@@ -165,8 +165,8 @@ QString Widget::getConfig()
 {
     QString result = " -config=\"{CheckOptions: [";
 
-    result += "{key: misc-suspicious-call-argument.IgnoreLiteralCases, value: " + QString::number(ui->ignoreLitCheckbox->isChecked()) + "}, ";
     result += "{key: misc-suspicious-call-argument.Equality, value: " + QString::number(ui->equalityCheckbox->isChecked()) + "}, ";
+    result += "{key: misc-suspicious-call-argument.Abbreviation, value: " + QString::number(ui->abbreviationCheckbox->isChecked()) + "}, ";
     result += "{key: misc-suspicious-call-argument.Levenshtein, value: " + QString::number(ui->levenshteinCheckbox->isChecked()) + "}, ";
     result += "{key: misc-suspicious-call-argument.Prefix, value: " + QString::number(ui->prefixCheckbox->isChecked()) + "}, ";
     result += "{key: misc-suspicious-call-argument.Suffix, value: " + QString::number(ui->suffixCheckbox->isChecked()) + "}, ";
@@ -231,8 +231,8 @@ void Widget::on_saveButton_clicked()
     QSettings settings("Settings", QSettings::IniFormat);
 
     settings.beginGroup("Bools");
-    settings.setValue("IgnoreLiteral", ui->ignoreLitCheckbox->isChecked());
     settings.setValue("Equality", ui->equalityCheckbox->isChecked());
+    settings.setValue("Abbreviation", ui->abbreviationCheckbox->isChecked());
     settings.setValue("Levenshtein", ui->levenshteinCheckbox->isChecked());
     settings.setValue("Prefix", ui->prefixCheckbox->isChecked());
     settings.setValue("Suffix", ui->suffixCheckbox->isChecked());
